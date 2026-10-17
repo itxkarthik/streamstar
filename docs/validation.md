@@ -34,6 +34,8 @@ Consumer-group offsets were inspected after processing to verify commitment. Kaf
 
 Scheduled drift: 60 rounds × 3 seeds × fixed widths 16/32/64/128 = **720 windows**, each evaluating seven methods. Stationary and frequent-drift comparisons add 180 windows each. Total: **1,080 windows / 7,560 method evaluations**.
 
+These counts describe computation, not independent evidence. The width sweep changes only the fixed-width sketches; the adaptive, gated and local methods produce identical results in all four width runs. Rounds within a run share overlapping windows. Each stream scenario therefore has three independent runs, one per seed.
+
 Parameters: 512 client groups, 256 item IDs, 4-cohort window, C=8 contributions/group/cohort, 5 sketch rows, private probe width 32, Gaussian multiplier 4, probe multiplier 8, epsilon cap 12, delta 1e-5, local epsilon 0.3, target error 0.025, gate maximum staleness 12 rounds. Seeds 26, 27, 28. Scheduled drift every 15 rounds; frequent drift every 5.
 
 At fixed/initial width 64, means across three seeds:
