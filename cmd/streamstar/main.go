@@ -37,10 +37,12 @@ func run(args []string) error {
 		return serve(args[1:])
 	case "experiment":
 		return experiment(args[1:])
+	case "experiment-h3":
+		return experimentH3(args[1:])
 	case "replay":
 		return replay(args[1:])
 	case "help", "-h", "--help":
-		fmt.Println("streamstar serve | experiment | replay\nUse a subcommand with -h for its flags.")
+		fmt.Println("streamstar serve | experiment | experiment-h3 | replay\nUse a subcommand with -h for its flags.")
 		return nil
 	default:
 		return fmt.Errorf("unknown command %q", args[0])

@@ -56,6 +56,14 @@ These measurements should remain visible even if later tuning improves the polic
 
 Committed artifacts in `docs/evaluation/` include all scenario summaries, the width-sweep aggregate table, and one complete per-round CSV/config pair. Regenerate full CSVs and interactive reports with the README commands; full generated output stays under ignored `results/`.
 
+## H3 evaluation completed on 2026-10-17
+
+The dedicated `experiment-h3` command now calibrates central Gaussian noise to a public final budget and schedules strict local-DP reports to match cumulative epsilon at every round. Only HybridSketch and strict Sampled Count-Min execute; both release every round with the same stream, event-frequency target, rows and width. Conditional PrivSketch is excluded.
+
+The completed sweep uses 60 rounds, five paired seeds, three budgets (1/6/12), two widths (16/64) and three drift scenarios: **90 paired runs, 5,400 windows and 10,800 method evaluations**. Per-prefix epsilon gaps and fresh releases are checked during execution. [H3 findings](evaluation/h3-findings.md) describe the conclusion and limitations; [the aggregate report](evaluation/h3-report.md) records all cells. This establishes an executable H3 evaluation, not a universal or deployment privacy claim.
+
+Verification on Go 1.27.2: Go race tests and vet pass; the standalone binary builds; schedule tests cover prefix matching/final caps; engine tests preserve selected methods' results and random streams; CLI tests verify paired artifacts and refusal to overwrite existing results. Python report tests reject incomplete, duplicate and mismatched runs and check paired error differences. The report tests run through `make test` and CI. Dashboard type checking, six store tests, and the embedded build pass.
+
 ## Processing microbenchmark
 
 `go test ./internal/engine -run '^$' -bench . -benchmem -benchtime=3x` measured approximately **75.2 ms/window** for all seven methods on an AMD EPYC 9645 host, corresponding to about **54,465 input events/processing-second** for 4,096 events per window. Approximately 40.3 MB were allocated per iteration. This three-iteration microbenchmark excludes source waiting and is not a sustained Kafka load test; the dashboard's memory metric is sketch payload size, not the total Go allocation count or heap peak.

@@ -37,9 +37,12 @@ import Dashboard from '../layouts/Dashboard.astro';
     <article class="card text-panel">
       <h2>H3 · Trust-model trade-offs</h2>
       <p>
-        Compare central sketches with Sampled Count-Min LDP at matched cumulative privacy levels. Keep the
-        conditional-privacy PrivSketch reproduction separate: its target and privacy definition differ.
+        Run the H3 experiment to compare HybridSketch with Sampled Count-Min LDP at matched cumulative epsilon
+        every round, across paired seeds, budgets, widths, and drift scenarios. It measures accuracy, processing time,
+        and payload. The live table uses the configured budgets; use the CLI for the matched comparison.
+        Conditional PrivSketch remains separate because its target and privacy definition differ.
       </p>
+      <code>go run ./cmd/streamstar experiment-h3</code>
     </article>
   </div>
 </Dashboard>

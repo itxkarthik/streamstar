@@ -120,6 +120,16 @@ Windows contain the last M **processing cohorts**. Synthetic and replay cohorts 
 
 To test H1, sweep fixed widths and compare across seeds, including the cost of probes. For H2, compare gated and always-release adaptive paths across drift rates and include stale error and probe spend. For H3, match cumulative epsilon on the same event target, compare the central path with strict sampled Count-Min, and report measured latency rather than assuming its direction. The conditional PrivSketch path is a separate reproduction.
 
+### Executable H3 evaluation
+
+`streamstar experiment-h3` runs only HybridSketch and strict sampled Count-Min on identical synthetic windows. It sweeps stationary, scheduled-drift (15-round), and frequent-drift (5-round) streams; final epsilon budgets default to 1, 6, 12, equal central/local widths to 16 and 64, and paired seeds to five. Rows, clipping, population, query domain and event-frequency normalization agree. Both methods publish every round; no adaptive probes or stale releases enter this comparison.
+
+For a public horizon T and final budget E, let L = log(1/delta). Inverting the Gaussian accountant gives `rho_total = (E / (sqrt(L+E)+sqrt(L)))^2`. The central path spends `rho_total/T` per round. The local report at round t spends `epsilon_central(t) - epsilon_central(t-1)`. Thus cumulative epsilon matches at every prefix, including warmup. The local schedule depends only on public configuration, never stream values. Runtime checks reject missing releases or an epsilon gap above 1e-9; regression tests cover prefix equality and budget rounding.
+
+Matching epsilon does not equate central (epsilon, delta)-DP and pure local DP: the latter has a stronger trust/perturbation requirement and zero delta. Equal widths control layout, not communication or computational work. This is a comparison of two implemented protocols, not optimized central/local frontiers. Timing is per-method processing wall time in a single process, including evaluation, with fixed Hybrid-then-local order; network latency, client parallelism and cryptographic setup are absent. Neither a lower-error claim nor a latency direction is assumed.
+
+Each run exports a config, per-report local epsilon schedule and raw CSV; a manifest and paired summaries describe the entire sweep. `scripts/report_h3.py` checks pair completeness and release/budget invariants, then produces per-cell means, between-seed SD, and paired local-minus-central error differences. Overlapping rounds are averaged within seed, not treated as independent replicates. See [H3 findings](evaluation/h3-findings.md) and [all aggregate measurements](evaluation/h3-report.md).
+
 ## Production work deliberately outside this research implementation
 
 Durable accounting/checkpoints, independent secure-aggregation processes, secure client endpoints, dropout protocols, malicious-contribution validation, private-only publication APIs, event-time watermarks, real-data ingestion at the original population scale, and independent formal privacy review are not implemented. InfluxDB/Grafana and Flink were replaced by the smaller Go processor and embedded dashboard, as permitted by stack freedom.

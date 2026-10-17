@@ -1,0 +1,41 @@
+{
+  "rounds": 60,
+  "seeds": 5,
+  "budgets": [
+    1,
+    6,
+    12
+  ],
+  "widths": [
+    16,
+    64
+  ],
+  "base_config": {
+    "domain": 256,
+    "clients": 512,
+    "events_per_round": 4096,
+    "window_rounds": 4,
+    "contribution_cap": 8,
+    "rows": 5,
+    "width": 64,
+    "min_width": 16,
+    "max_width": 256,
+    "probe_width": 32,
+    "noise_multiplier": 4,
+    "probe_multiplier": 8,
+    "epsilon_limit": 12,
+    "delta": 0.00001,
+    "local_epsilon": 0.3,
+    "local_width": 16,
+    "target_error": 0.025,
+    "change_threshold": 0.08,
+    "max_staleness": 12,
+    "drift_every": 15,
+    "top_k": 10,
+    "seed": 26,
+    "deterministic_noise": true
+  },
+  "privacy_schedule": "constant central rho per round; local epsilon increments match central cumulative epsilon at every round; no probes; both release every round",
+  "go_version": "go1.27.2",
+  "platform": "linux/amd64"
+}

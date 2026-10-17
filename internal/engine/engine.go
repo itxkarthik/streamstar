@@ -90,11 +90,38 @@ type Engine struct {
 }
 
 func New(c Config) (*Engine, error) {
+	return NewForMethods(c)
+}
+
+// NewForMethods runs only the requested independent protocols. Empty ids selects
+// all methods. Results follow Methods order, and random seeds retain their
+// original method indices.
+func NewForMethods(c Config, ids ...string) (*Engine, error) {
 	if err := c.Validate(); err != nil {
 		return nil, err
 	}
+	selected := make(map[string]bool)
+	for _, id := range ids {
+		if selected[id] {
+			return nil, fmt.Errorf("duplicate method %q", id)
+		}
+		known := false
+		for _, method := range Methods {
+			if method.ID == id {
+				known = true
+				break
+			}
+		}
+		if !known {
+			return nil, fmt.Errorf("unknown method %q", id)
+		}
+		selected[id] = true
+	}
 	e := &Engine{Config: c, window: stream.Window{Capacity: c.WindowRounds}}
 	for index, method := range Methods {
+		if len(selected) > 0 && !selected[method.ID] {
+			continue
+		}
 		e.models = append(e.models, &model{method: method, width: c.Width, rng: privacy.NewRandom(c.Seed+9109+int64(index)*7919, c.DeterministicNoise), ledger: privacy.Ledger{Delta: c.Delta, Limit: c.EpsilonLimit}})
 	}
 	return e, nil

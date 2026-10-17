@@ -69,6 +69,20 @@ Each run writes per-round CSV and its complete config. `summary.json` records me
 
 Synthetic event generation is always seeded. Privacy noise uses **crypto entropy by default**. The supplied reproducibility configs explicitly enable deterministic noise for research: those runs carry no deployment DP claim. Timing measurements naturally vary between runs.
 
+### H3: central versus local privacy
+
+```sh
+# 3 stream scenarios × 3 budgets × 2 equal widths × 5 paired seeds × 60 rounds
+# Use a new/empty output directory; existing results are never overwritten.
+go run ./cmd/streamstar experiment-h3 \
+  -config configs/reproducible.json -rounds 60 -seeds 5 -out results/h3
+python3 scripts/report_h3.py results/h3
+```
+
+This compares **HybridSketch and strict Sampled Count-Min LDP**, excluding conditional PrivSketch. Both release every round on the same clipped event stream, with equal rows/widths and matched cumulative epsilon at every round. Central noise is calibrated to each final budget; local per-report epsilon follows a public schedule matching the central ledger. The comparison uses central approximate DP versus stronger pure local DP at the same epsilon, so the trust assumptions and guarantees remain different.
+
+The runner writes per-round CSVs, effective configs, local spending schedules, a manifest, and per-seed summaries. The report checks complete pairs and budgets, then records error, MSE, NCR, processing time, payload, and between-seed variability. [H3 findings](docs/evaluation/h3-findings.md) explain the measured outcome and limitations; [aggregate results](docs/evaluation/h3-report.md) contain every scenario/budget/width combination. Processing time measures the simulator, not distributed network latency.
+
 ## Dashboard development
 
 The dashboard source lives in `ui/` and is built with [Astro](https://astro.build) and Preact islands:

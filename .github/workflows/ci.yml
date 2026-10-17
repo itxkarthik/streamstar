@@ -15,6 +15,7 @@ jobs:
           cache: true
       - run: go test -race ./...
       - run: go vet ./...
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: go build ./cmd/streamstar
   dashboard:
     runs-on: ubuntu-latest
